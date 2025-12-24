@@ -1,4 +1,6 @@
 <?php
+//logika pemrosesan form penilaian mahasiswa
+//Deklarasi variabel
 $nama = $nim = "";
 $absen = $tugas = $uts = $uas = "";
 $hasil_html = ""; 
@@ -6,7 +8,10 @@ $pesan_error = "";
 $header_class = "bg-primary"; 
 $btn_class = "btn-primary";   
 
+//Pemicu proses saat tombol submit ditekan
 if (isset($_POST['proses'])) {
+    //Mengambil data dari form
+    //trim digunakan untuk menghilangkan spasi berlebih
     $nama = trim($_POST['nama']); 
     $nim = trim($_POST['nim']);
     $absen = $_POST['kehadiran']; 
@@ -14,6 +19,7 @@ if (isset($_POST['proses'])) {
     $uts = $_POST['uts'];
     $uas = $_POST['uas'];
 
+    //Validasi input
     if ($nama === "" || $nim === "" || $absen === "" || $tugas === "" || $uts === "" || $uas === "") {
         $pesan_error = "Semua kolom harus diisi!";
     } 
@@ -24,19 +30,22 @@ if (isset($_POST['proses'])) {
         $uts_val = floatval($uts);
         $uas_val = floatval($uas);
 
-        $nilai_akhir = ($absen_val * 0.1) + ($tugas_val * 0.2) + ($uts_val * 0.3) + ($uas_val * 0.4);
+        $nilai_akhir = ($absen_val * 0.1) + ($tugas_val * 0.2) + ($uts_val * 0.3) + ($uas_val * 0.4);//100% = nilai_akhir
+
+        //menentukan grade berdasarkan nilai akhir
         if ($nilai_akhir >= 85) $grade = 'A';
         elseif ($nilai_akhir >= 70) $grade = 'B';
         elseif ($nilai_akhir >= 55) $grade = 'C';
         elseif ($nilai_akhir >= 40) $grade = 'D';
         else $grade = 'E';
 
+        //menentukan status lulus atau tidak
         $lulus = true;
         if ($absen_val < 70 || $nilai_akhir < 60 || $tugas_val < 40 || $uts_val < 40 || $uas_val < 40) {
             $lulus = false;
         }
 
-        
+        //menyiapkan teks dan warna berdasarkan status kelulusan
         if ($lulus) {
             $status_text = "LULUS";
             $alert_color = "alert-success"; 
@@ -47,6 +56,7 @@ if (isset($_POST['proses'])) {
             $btn_class = "btn-danger";
         }
 
+        //Membuat output hasil penilaian dalam format HTML
         $hasil_html = "
         <div class='alert $alert_color mt-4 shadow-sm' role='alert'>
             <h4 class='alert-heading'>Hasil Penilaian</h4>
@@ -62,6 +72,7 @@ if (isset($_POST['proses'])) {
 }
 ?>
 
+//Bagian tampilan form penilaian mahasiswa dalam HTML
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -82,6 +93,8 @@ if (isset($_POST['proses'])) {
                 <h2 class="h4 mb-0">Form Penilaian Mahasiswa</h2>
             </div>
             
+            //bagian isi form
+            //bagian input nama dan nim
             <div class="card-body p-4">
                 <form method="post" novalidate>
                     <div class="mb-3">
@@ -94,6 +107,7 @@ if (isset($_POST['proses'])) {
                         <input type="number" class="form-control" name="nim" placeholder="Masukkan NIM" value="<?php echo $nim; ?>">
                     </div>
 
+                    //bagian input nilai
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nilai Kehadiran (10%)</label>
                         <input type="number" class="form-control" name="kehadiran" placeholder="0 - 100" value="<?php echo $absen; ?>">
@@ -115,6 +129,7 @@ if (isset($_POST['proses'])) {
                         <input type="number" class="form-control" name="uas" placeholder="0 - 100" value="<?php echo $uas; ?>">
                     </div>
 
+                    //bagian tombol proses
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" name="proses" class="btn <?php echo $btn_class; ?> btn-lg">Proses</button>
                     </div>
